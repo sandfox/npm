@@ -27,6 +27,9 @@ test('github-shortcut', function (t) {
     ['git://github.com/foo/private.git', 'GitHub shortcuts try git URLs first'],
     ['git@github.com:foo/private.git', 'GitHub shortcuts try SSH second'],
     ['https://github.com/foo/private.git', 'GitHub shortcuts try HTTPS URLs third']
+    ['https://bitbucket.org/foo/private.git', 'bitbucket shortcuts try https:// first'],
+    ['ssh://git@bitbucket.org/foo/private.git', 'bitbucket shortcuts try ssh:// second']
+    ['https://bitbucket.com/foo/private.git', 'GitHub shortcuts try HTTPS URLs third']
   ]
   var npm = requireInject.installGlobally('../../lib/npm.js', {
     'child_process': {
@@ -54,8 +57,9 @@ test('github-shortcut', function (t) {
   npm.load(opts, function (er) {
     t.ifError(er, 'npm loaded without error')
     npm.commands.install(['foo/private'], function (er, result) {
-      t.ok(er, 'mocked install failed as expected')
-      t.end()
+      npm.commands.install(['bitbucket:foo/private'], function (er, result) {
+        t.end()
+      })
     })
   })
 })
